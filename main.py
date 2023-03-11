@@ -1,5 +1,6 @@
 from visualization import *
 from planner import *
+from node import *
 
 # plot empty axes
 fig, ax = plt.subplots()

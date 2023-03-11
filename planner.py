@@ -1,6 +1,7 @@
 import numpy as np
 import queue
-
+from node import *
+    
 class Planner:
 
     def __init__():
@@ -8,32 +9,6 @@ class Planner:
     
     def plan():
         raise NotImplemented
-    
-
-class Node:
-
-    def __init__(self, x, y):
-        raise NotImplemented
-
-
-    def cost_to(self, node):
-        raise NotImplemented
-    
-
-class BasicNode:
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.pt = np.array([x, y])
-
-
-    def cost_to(self, node):
-        return np.linalg.norm(self.pt - node.pt)
-    
-
-    def __str__(self):
-        return f'({self.x}, {self.y})'
 
 class Astar(Planner):
 
@@ -57,7 +32,6 @@ class Astar(Planner):
             elif distances[path[-1]] < dist:
                 continue
                 
-            # print('current', path)
             if path[-1] == goal:
                 self.path = path
                 return path
