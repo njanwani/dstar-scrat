@@ -52,13 +52,13 @@ class Dstar(Planner):
     OPEN = 1
     CLOSED = 2
 
-    def __init__(self, X, g, graph):
+    def __init__(self, g, graph):
         """
         Initialization function (many details are left out and can be seen in
         the D* paper) that declares variables and initializes dictionaries.
         
-        V is an iterable of all states
-        g is the goal state
+        g       is the goal
+        graph   is the environment graph dictionary 
         """
         self.t = {}                         # the types for a state X (i.e. NEW,
                                             # OPEN, or CLOSED)
@@ -85,11 +85,14 @@ class Dstar(Planner):
         self.graph = graph                  # graph with neighbor relations
 
         # initialization steps
-        for x in X:
+        for x in graph.keys():
             self.t[x] = Dstar.NEW
 
+        self.goal = g
         self.h[x] = 0
-        self.open_list.put((self.h[x], g))
+        self.open_list.put((self.h[x], self.goal))
+        self.t[x] = Dstar.OPEN
+        self.b[self.goal] = None
 
     def min_state(self):
         """
@@ -117,6 +120,7 @@ class Dstar(Planner):
         elif self.t[x] == Dstar.CLOSED:
             self.k[x] = min(self.h[x], h_new)
 
+        self.h[x] = h_new
         self.t[x] = Dstar.OPEN
         self.open_list.put((self.k[x], x))
     
@@ -128,11 +132,16 @@ class Dstar(Planner):
         start is the start state (note the goal state is fixed)
         """
         k_old, x = self.min_state()
+        # print(k_old, x)
         if x == None:
             Exception('Priority queue is empty')
+        # print(x.x, x.y)
+
+        self.t[x] = Dstar.CLOSED
 
         # LOWER state
         if k_old < self.h[x]:
+            # print('LOWER')
             for y in self.graph[x]:
                 if self.h[y] <= k_old and self.h[x] > self.h[y] + x.cost_to(y):
                     self.b[x] = y
@@ -140,18 +149,25 @@ class Dstar(Planner):
 
         # RAISE state
         elif k_old == self.h[x]:
+            # print('RAISE')
             for y in self.graph[x]:
+                # print(y in self.b)
+                # print(y in self.h)
+                # print(self.t[y] == Dstar.NEW)
+                # print()
                 if self.t[y] == Dstar.NEW \
-                   or self.b[y] == x and self.h[y] != self.h[x] + x.cost_to(y) \
-                   or self.b[y] != x and self.h[y] > self.h[x] + x.cost_to(y):
+                   or (self.b[y] == x and self.h[y] != self.h[x] + x.cost_to(y)) \
+                   or (self.b[y] != x and self.h[y] > self.h[x] + x.cost_to(y)):
                     self.b[y] = x
                     self.insert(y, self.h[x] + x.cost_to(y))
 
         # "DIJKSTRA" state (effectively a dijkstra implementation)
         else:
+            # print('DIJKSTRA')
             for y in self.graph[x]:
+                # print('Considering ', f'({y.x}, {y.y})')
                 if self.t[y] == Dstar.NEW \
-                   or self.b[y] == x and self.h[y] != self.h[x] + x.cost_to(y):
+                   or (self.b[y] == x and self.h[y] != self.h[x] + x.cost_to(y)):
                     self.b[y] = x
                     self.insert(y, self.h[x] + x.cost_to(y))
                 else:
@@ -164,15 +180,15 @@ class Dstar(Planner):
                            and self.h[y] > k_old:
                             self.insert(y, self.h[y])
             
-            if x == start:
-                return x
-        
-        return None # change here as I dont know why returning k_min would help
+        # input()
+        return x # change here as I dont know why returning k_min would help
     
 
     def modify_cost(self, x, y, cval):
+        x.make_obstacle()
         assert(x.cost_to(y) == cval)
         if self.t[x] == Dstar.CLOSED:
+            print('ADDED')
             self.insert(x, self.h[x])
         return None # should be k_min idk how get that tho
     
@@ -182,5 +198,12 @@ class Dstar(Planner):
         while curr != start:
             curr = self.process_state(start)
 
-        # TODO: construct the path from self.b and return it...too tired rip
+        self.path = []
+        node = start
+        while True:
+            self.path.append(node)
+            if node == self.goal:
+                break
+            node = self.b[node]
 
+        return self.path

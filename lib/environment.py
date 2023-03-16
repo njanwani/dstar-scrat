@@ -18,12 +18,13 @@ class Environment:
 
 class Uniform(Environment):
 
-    def __init__(self, pts):
+    def __init__(self, pts, mincost=1):
         self.graph = {}
         self.obstacles = None
         self.pts = np.array(pts)
+        self.mincost = mincost
 
-    def generate(self, extranodes=[], mincost=1):
+    def generate(self, extranodes=[]):
         """
         Generate environment graph
         """
@@ -40,7 +41,7 @@ class Uniform(Environment):
                 self.graph[v1] = []
 
             for v2 in nodes:
-                if v1.cost_to(v2) < mincost and v1 != v2:
+                if v1.cost_to(v2) < self.mincost and v1 != v2:
                     self.graph[v1].append(v2)
 
 
