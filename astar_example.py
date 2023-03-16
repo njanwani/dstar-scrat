@@ -15,9 +15,10 @@ viz.show(msg='Showing axes. Press enter to continue')
 env = Uniform(np.random.random((500,2)) * 10 - 5)
 env.add_startgoal(start=[-4, -4], goal=[4, 4])
 viz.plot_nodes(env.pts)
-ax.set_title('Astar path planning algorithm')
+ax.set_title('A* path planning algorithm') 
 viz.show(msg='Showing states. Press enter to continue')
 
+# plot graph connections
 viz.plot_graph(env.graph)
 viz.show(msg='Showing graph. Press enter to continue')
 
