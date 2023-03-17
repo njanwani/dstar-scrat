@@ -98,7 +98,7 @@ class Dstar(Planner):
         """
         Returns the top of the OPEN priority queue
         """
-        return self.open_list.get()
+        return self.open_list.get(block=False)
     
 
     def get_kmin(self):

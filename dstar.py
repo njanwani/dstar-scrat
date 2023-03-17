@@ -28,11 +28,26 @@ path = planner.plan(env.start)
 viz.plot_path(BasicNode.nodes_to_xy(path))
 viz.show(msg='Showing path. Press enter to add point obstacle') 
 
-x = np.random.choice(path)
+# making obstacles at 25%, 50%, and 75% of the current path...
+idx = len(path) // 2
+x = path[idx]
+print(x, 'is now an obstacle')
 y = planner.b[x]
 planner.modify_cost(x,y,float('inf'))
 
-path = planner.plan(env.start)
-print(len(path))
+idx = 3 * len(path) // 4
+x = path[idx]
+print(x, 'is now an obstacle')
+y = planner.b[x]
+planner.modify_cost(x,y,float('inf'))
+
+idx = len(path) // 4
+x = path[idx]
+print(x, 'is now an obstacle')
+y = planner.b[x]
+planner.modify_cost(x,y,float('inf'))
+
+# replanning
+path = planner.plan(path[idx - 1])
 viz.plot_path(BasicNode.nodes_to_xy(path), col='Purple')
-viz.show(msg='Showing path. Press enter to quit')
+viz.show(msg='Showing altered path. Press enter to quit')
