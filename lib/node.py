@@ -20,7 +20,10 @@ class BasicNode:
         self.x = x
         self.y = y
         self.pt = np.array([x, y])
-        self.variant = Node.FREE
+        if variant == None:
+            self.variant = Node.FREE
+        else:
+            self.variant = variant
 
 
     def cost_to(self, node):

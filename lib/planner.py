@@ -11,8 +11,9 @@ class Planner:
 
 class Astar(Planner):
 
-    def __init__(self):
+    def __init__(self, cost_multiplier=1):
         self.path = []
+        self.cost_multiplier = cost_multiplier
 
     def plan(self, graph, start, goal):
         """
@@ -41,7 +42,7 @@ class Astar(Planner):
             
             for node in graph[path[-1]]:
                 if node not in path:
-                    pq.put((dist + path[-1].cost_to(node) + node.cost_to(goal), path + [node]))
+                    pq.put((dist + path[-1].cost_to(node) + self.cost_multiplier * node.cost_to(goal), path + [node]))
 
         print('FAILED')
         return None

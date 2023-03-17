@@ -5,6 +5,7 @@ from lib.environment import *
 import numpy as np
 import matplotlib.pyplot as plt
 
+np.random.seed(234)
 # plot empty axes
 fig, ax = plt.subplots()
 viz = Visualization((-5, 5), (-5, 5), ax)
