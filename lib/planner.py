@@ -1,17 +1,30 @@
 import numpy as np
 from queue import PriorityQueue
+from lib.node import *
     
 class Planner:
 
-    def __init__():
-        raise NotImplemented
+    def __init__(self, init_onDeck = 0, init_processed = 0):
+        self.nodes_onDeck = init_onDeck
+        self.nodes_processed = init_processed
     
     def plan():
         raise NotImplemented
 
+    def getCounts(self):
+        return (self.nodes_onDeck, self.nodes_processed)
+
+    def addOnDeck(self):
+        self.nodes_onDeck += 1
+    
+    def addProcessed(self):
+        self.nodes_processed += 1
+
 class Astar(Planner):
 
-    def __init__(self, cost_multiplier=1):
+    def __init__(self, cost_multiplier=1, init_onDeck = 0, init_processed = 0):
+        super().__init__(init_onDeck, init_processed)
+
         self.path = []
         self.cost_multiplier = cost_multiplier
 
@@ -23,11 +36,15 @@ class Astar(Planner):
         pq = PriorityQueue()
         for node in graph[start]:
             pq.put((start.cost_to(node), [start, node]))
+            node.state = Node.ONDECK
+            self.addOnDeck()
 
         distances = {}
 
         while not pq.empty():
             dist, path = pq.get()
+            path[-1].state = Node.DONE
+            # self.addProcessed()
 
             if path[-1] not in distances:
                 distances[path[-1]] = dist
@@ -38,11 +55,18 @@ class Astar(Planner):
                 
             if path[-1] == goal:
                 self.path = path
+                for node in graph.keys():
+                    if node.state == Node.DONE:
+                        self.addProcessed()
                 return path
             
             for node in graph[path[-1]]:
-                if node not in path:
+                if node not in path and node.state != Node.DONE:
+                    if node.state != Node.ONDECK:
+                        self.addOnDeck()
                     pq.put((dist + path[-1].cost_to(node) + self.cost_multiplier * node.cost_to(goal), path + [node]))
+                    node.state = Node.ONDECK
+                    
 
         print('FAILED')
         return None
@@ -53,7 +77,7 @@ class Dstar(Planner):
     OPEN = 1
     CLOSED = 2
 
-    def __init__(self, g, graph):
+    def __init__(self, g, graph, init_onDeck = 0, init_processed = 0):
         """
         Initialization function (many details are left out and can be seen in
         the D* paper) that declares variables and initializes dictionaries.
@@ -61,6 +85,8 @@ class Dstar(Planner):
         g       is the goal
         graph   is the environment graph dictionary 
         """
+        super().__init__(init_onDeck, init_processed)
+
         self.t = {}                         # the types for a state X (i.e. NEW,
                                             # OPEN, or CLOSED)
 
@@ -124,6 +150,7 @@ class Dstar(Planner):
         self.h[x] = h_new
         self.t[x] = Dstar.OPEN
         self.open_list.put((self.k[x], x))
+        self.addOnDeck()
     
 
     def process_state(self, start):
@@ -139,6 +166,7 @@ class Dstar(Planner):
         # print(x.x, x.y)
 
         self.t[x] = Dstar.CLOSED
+        self.addProcessed()
 
         # LOWER state
         if k_old < self.h[x]:

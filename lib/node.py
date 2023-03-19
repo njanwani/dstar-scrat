@@ -3,6 +3,10 @@ import numpy as np
 class Node:
     FREE = 0
     OBSTACLE = 1
+
+    UNPROCESSED = 2
+    DONE = 3
+    ONDECK = 4
     def __init__(self, x, y):
         raise NotImplemented
 
@@ -20,6 +24,7 @@ class BasicNode:
         self.x = x
         self.y = y
         self.pt = np.array([x, y])
+        self.state = Node.UNPROCESSED
         if variant == None:
             self.variant = Node.FREE
         else:

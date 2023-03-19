@@ -28,6 +28,7 @@ path = planner.plan(env.start)
 
 viz.plot_path(BasicNode.nodes_to_xy(path))
 viz.show(msg='Showing path. Press enter to add point obstacle') 
+print(f"associated onDeck and processed nodes before obstacles and replanning: %s" % (planner.getCounts(), ))
 
 # making obstacles at 25%, 50%, and 75% of the current path...
 idx = len(path) // 2
@@ -52,3 +53,4 @@ planner.modify_cost(x,y,float('inf'))
 path = planner.plan(path[idx - 1])
 viz.plot_path(BasicNode.nodes_to_xy(path), col='Purple')
 viz.show(msg='Showing altered path. Press enter to quit')
+print(f"associated onDeck and processed nodes: %s" % (planner.getCounts(), ))

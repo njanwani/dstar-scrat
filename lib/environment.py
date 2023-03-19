@@ -18,9 +18,9 @@ class Environment:
 
 class Uniform(Environment):
 
-    def __init__(self, pts, mincost=1):
+    def __init__(self, pts, obstacles=[], mincost=1):
         self.graph = {}
-        self.obstacles = None
+        self.obstacles = np.array(obstacles)
         self.pts = np.array(pts)
         self.mincost = mincost
 
@@ -30,7 +30,10 @@ class Uniform(Environment):
         """
         nodes = []
         for pt in self.pts:
-            nodes.append(BasicNode(pt[0], pt[1]))
+            if pt in self.obstacles:
+                nodes.append(BasicNode(pt[0], pt[1], Node.OBSTACLE))
+            else:
+                nodes.append(BasicNode(pt[0], pt[1]))
 
         for extra in extranodes:
             nodes.append(extra)
@@ -72,9 +75,8 @@ class Uniform(Environment):
         """
         return super().in_freespace()
 
-    def add_obstacle(pts):
+    def add_obstacle(self, obs_pts):
         """
         ???
         """
         return super().add_obstacle()
-    
