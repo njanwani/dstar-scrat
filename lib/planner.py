@@ -514,7 +514,7 @@ class DstarFocused(Planner):
         self.t[x] = Dstar.CLOSED
         self.addProcessed()
 
-        # LOWER state
+        # RAISE state
         if k_old < self.h[x]:
             # print('LOWER')
             for y in self.graph[x]:

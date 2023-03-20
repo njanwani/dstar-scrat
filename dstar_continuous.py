@@ -36,11 +36,11 @@ print(f"associated onDeck, processed nodes, and iterations before obstacles and 
 
 
 for v in env.graph.keys():
-    planner.modify_cost(v, None, np.cos(v.y) + v.x**2)
+    planner.modify_cost(v, None, np.sin(v.y) + v.x**2)
 
 x = np.arange(-7, 7)
 y = x.reshape(-1, 1)
-h = np.cos(y) + x**2
+h = np.sin(y) + x**2
 
 fig, ax = plt.subplots()
 viz2 = Visualization((-5, 5), (-5, 5), ax)

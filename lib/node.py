@@ -53,6 +53,8 @@ class BasicNode:
         pointpath = []
 
         for node in path:
+            # print(node)
+            # input()
             pointpath.append([node.x, node.y])
 
         return pointpath
@@ -75,28 +77,29 @@ class BasicNode:
         return self.cost < other.cost
     
 
-class TopologyNode:
+class TopologyNode(BasicNode):
     """
     Basic x,y node. Changing to a more complex state will likely require changes in other lib files
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, variant=None):
+        super().__init__(x, y, variant)
         self.x = x
         self.y = y
         self.pt = np.array([x, y])
         self.creach = 0.0
-        self.cost = 0
+        self._cost = 0
 
 
     def set_cost(self, cval):
-        self.cost = np.exp(cval) # keep everything positive
+        self._cost = np.exp(cval) # keep everything positive
 
 
     def cost_to(self, node):
         """
         Cost function
         """
-        return self.cost
+        return self._cost
     
 
     def nodes_to_xy(path):
