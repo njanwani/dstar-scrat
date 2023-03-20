@@ -20,8 +20,8 @@ ax.set_title('D* path planning algorithm')
 viz.show(msg='Showing states. Press enter to continue')
 
 # plot graph connections
-viz.plot_graph(env.graph)
-viz.show(msg='Showing graph. Press enter to continue')
+# viz.plot_graph(env.graph)
+# viz.show(msg='Showing graph. Press enter to continue')
 
 planner = Dstar(env.goal, env.graph)
 path = planner.plan(env.start)
@@ -54,95 +54,95 @@ y = planner.b[x]
 planner.modify_cost(x,y,float('inf'))
 
 # replanning
-path = planner.plan(path[idx - 1])
+path = planner.plan(env.start, y=path[idx - 1])
 viz.plot_path(BasicNode.nodes_to_xy(path), col='Purple')
 viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to add newer obstacles')
 print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
 
-# making obstacles at 25%, 50%, and 75% of the current path...
-idx = len(path) // 2
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# # making obstacles at 25%, 50%, and 75% of the current path...
+# idx = len(path) // 2
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-idx = 3 * len(path) // 4
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# idx = 3 * len(path) // 4
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-idx = len(path) // 4
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# idx = len(path) // 4
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-# replanning
-path = planner.plan(path[idx - 1])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Blue')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to add newer obstacles')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
+# # replanning
+# path = planner.plan(path[idx - 1])
+# viz.plot_path(BasicNode.nodes_to_xy(path), col='Blue')
+# viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
+# viz.show(msg='Showing altered path. Press enter to add newer obstacles')
+# print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
 
-# making obstacles at 25%, 50%, and 75% of the current path...
-idx = len(path) // 2
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# # making obstacles at 25%, 50%, and 75% of the current path...
+# idx = len(path) // 2
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-idx = 3 * len(path) // 4
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# idx = 3 * len(path) // 4
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-idx = len(path) // 4
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# idx = len(path) // 4
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-# replanning
-path = planner.plan(path[idx - 1])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Violet')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to add newer obstacles')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
+# # replanning
+# path = planner.plan(path[idx - 1])
+# viz.plot_path(BasicNode.nodes_to_xy(path), col='Violet')
+# viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
+# viz.show(msg='Showing altered path. Press enter to add newer obstacles')
+# print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
 
-# making obstacles at 25%, 50%, and 75% of the current path...
-idx = len(path) // 2
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# # making obstacles at 25%, 50%, and 75% of the current path...
+# idx = len(path) // 2
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-idx = 3 * len(path) // 4
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# idx = 3 * len(path) // 4
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-idx = len(path) // 4
-x = path[idx]
-obstacles.append(x)
-# print(x, 'is now an obstacle')
-y = planner.b[x]
-planner.modify_cost(x,y,float('inf'))
+# idx = len(path) // 4
+# x = path[idx]
+# obstacles.append(x)
+# # print(x, 'is now an obstacle')
+# y = planner.b[x]
+# planner.modify_cost(x,y,float('inf'))
 
-# replanning
-path = planner.plan(path[idx - 1])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Indigo')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to quit')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
+# # replanning
+# path = planner.plan(path[idx - 1])
+# viz.plot_path(BasicNode.nodes_to_xy(path), col='Indigo')
+# viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
+# viz.show(msg='Showing altered path. Press enter to quit')
+# print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))

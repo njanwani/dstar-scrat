@@ -222,7 +222,9 @@ class Dstar(Planner):
         """
         Peeks at the top of the OPEN priority queue 
         """
-        pass # not sure what to write here since we get this in min_state()...
+        kmin, temp = self.open_list.get(block=False)
+        self.open_list.put((kmin, temp))
+        return kmin
 
 
     def insert(self, x, h_new):
@@ -255,10 +257,13 @@ class Dstar(Planner):
             Exception('Priority queue is empty')
         # print(x.x, x.y)
 
-        if self.t[x] == Dstar.CLOSED:
-            return x
+        # if self.t[x] == Dstar.CLOSED:
+        #     return 0
         self.t[x] = Dstar.CLOSED
         self.addProcessed()
+
+        if start != None and self.t[start] == Dstar.CLOSED:
+            return 0
 
         # RAISE state
         if k_old < self.h[x]:
@@ -305,7 +310,7 @@ class Dstar(Planner):
                             self.insert(y, self.h[y])
             
         # input()
-        return x # change here as I dont know why returning k_min would help
+        return self.get_kmin() # change here as I dont know why returning k_min would help
     
 
     def modify_cost(self, x, y, cval):
@@ -314,7 +319,7 @@ class Dstar(Planner):
         if self.t[x] == Dstar.CLOSED:
             print('ADDED')
             self.insert(x, self.h[x])
-        return None # should be k_min idk how get that tho
+        return self.get_kmin() # should be k_min idk how get that tho
     
     # def modify_cost(self, x, y, cval):
     #     #assert(x.cost_to(y) == cval)
@@ -329,10 +334,24 @@ class Dstar(Planner):
     #     return None # should be k_min idk how get that tho
     
 
-    def plan(self, start):
-        curr = None
-        while curr != start:
-            curr = self.process_state(start)
+    def plan(self, start, y=None):
+        curr_k = 0
+
+        def get_condition(curr_k):
+            if y == None:
+                return self.t[start] != Dstar.CLOSED
+            else:
+                return curr_k < self.h[y]
+
+        init = None
+        if y == None:
+            init = start    
+
+        while get_condition(curr_k) and curr_k > -1:
+            curr_k = self.process_state(init)
+            print('curr_k:', curr_k)
+            print('pqueue empty?', self.open_list.empty())
+            print()
 
         self.path = []
         node = start
