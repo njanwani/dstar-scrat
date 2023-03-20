@@ -71,10 +71,10 @@ print(f"Total cost of original path: %s" % (total_cost, ))
 
 # replanning
 obstacles, idx = generate_obstacles(path)
-final_path = path[0:idx-1]
 new_start = [path[idx - 1].x, path[idx - 1].y]
 (new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 0, planner.getCounts())
-final_path = np.concatenate((final_path, new_path))
+prev_final_idx = idx - 1
+final_path = np.concatenate((final_path[0:prev_final_idx], new_path))
 viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Purple')
 viz.plot_nodes(obstacles, col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to add newer obstacles')
@@ -83,10 +83,10 @@ print(f"Total cost of path: %s" % (path_cost(final_path), ))
 
 # replanning
 obstacles, idx = generate_obstacles(new_path)
-final_path = new_path[0:idx-1]
 new_start = [new_path[idx - 1].x, new_path[idx - 1].y]
 (new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 0, new_counts)
-final_path = np.concatenate((final_path, new_path))
+prev_final_idx += idx - 1
+final_path = np.concatenate((final_path[0:prev_final_idx], new_path))
 viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Blue')
 viz.plot_nodes(obstacles, col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to add newer obstacles')
@@ -95,10 +95,10 @@ print(f"Total cost of path: %s" % (path_cost(final_path), ))
 
 # replanning
 obstacles, idx = generate_obstacles(new_path)
-final_path = new_path[0:idx-1]
 new_start = [new_path[idx - 1].x, new_path[idx - 1].y]
 (new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 0, new_counts)
-final_path = np.concatenate((final_path, new_path))
+prev_final_idx += idx - 1
+final_path = np.concatenate((final_path[0:prev_final_idx], new_path))
 viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Violet')
 viz.plot_nodes(obstacles, col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to add newer obstacles')
@@ -107,10 +107,10 @@ print(f"Total cost of path: %s" % (path_cost(final_path), ))
 
 # replanning
 obstacles, idx = generate_obstacles(new_path)
-final_path = new_path[0:idx-1]
 new_start = [new_path[idx - 1].x, new_path[idx - 1].y]
 (new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 0, new_counts)
-final_path = np.concatenate((final_path, new_path))
+prev_final_idx += idx - 1
+final_path = np.concatenate((final_path[0:prev_final_idx], new_path))
 viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Indigo')
 viz.plot_nodes(obstacles, col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to show final path')
