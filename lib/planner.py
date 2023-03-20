@@ -270,7 +270,7 @@ class Dstar(Planner):
                     self.h[x] = self.h[y] + x.cost_to(y)
 
         # LOWER state
-        elif k_old == self.h[x]:
+        if k_old == self.h[x]:
             # print('LOWER')
             for y in self.graph[x]:
                 self.addIterations()
