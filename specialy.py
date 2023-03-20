@@ -53,6 +53,6 @@ planner.modify_cost(x,y,float('inf'))
 # planner.modify_cost(x,y,float('inf'))
 
 # replanning
-path = planner.plan(path[idx-1])
+path = planner.plan(env.start, y=path[idx-1])
 viz.plot_path(BasicNode.nodes_to_xy(path), col='Purple')
 viz.show(msg='Showing altered path. Press enter to quit')

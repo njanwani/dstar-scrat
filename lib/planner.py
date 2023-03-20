@@ -210,6 +210,7 @@ class Dstar(Planner):
         self.open_list.put((self.h[g], self.goal))
         self.t[g] = Dstar.OPEN
         self.b[self.goal] = None
+        self.fullpath = []
 
     def min_state(self):
         """
@@ -257,8 +258,8 @@ class Dstar(Planner):
             Exception('Priority queue is empty')
         # print(x.x, x.y)
 
-        # if self.t[x] == Dstar.CLOSED:
-        #     return 0
+        if self.t[x] == Dstar.CLOSED:
+            return 0
         self.t[x] = Dstar.CLOSED
         self.addProcessed()
 
@@ -267,7 +268,6 @@ class Dstar(Planner):
 
         # RAISE state
         if k_old < self.h[x]:
-            # print('RAISE')
             for y in self.graph[x]:
                 self.addIterations()
                 if self.h[y] <= k_old and self.h[x] > self.h[y] + x.cost_to(y):
@@ -276,13 +276,8 @@ class Dstar(Planner):
 
         # LOWER state
         if k_old == self.h[x]:
-            # print('LOWER')
             for y in self.graph[x]:
                 self.addIterations()
-                # print(y in self.b)
-                # print(y in self.h)
-                # print(self.t[y] == Dstar.NEW)
-                # print()
                 if self.t[y] == Dstar.NEW \
                 or (self.b[y] == x and self.h[y] != self.h[x] + x.cost_to(y)) \
                 or (self.b[y] != x and self.h[y] > self.h[x] + x.cost_to(y)):
@@ -291,10 +286,8 @@ class Dstar(Planner):
 
         # "DIJKSTRA" state (effectively a dijkstra implementation)
         else:
-            # print('DIJKSTRA')
             for y in self.graph[x]:
                 self.addIterations()
-                # print('Considering ', f'({y.x}, {y.y})')
                 if self.t[y] == Dstar.NEW \
                 or (self.b[y] == x and self.h[y] != self.h[x] + x.cost_to(y)):
                     self.b[y] = x
@@ -309,34 +302,19 @@ class Dstar(Planner):
                         and self.h[y] > k_old:
                             self.insert(y, self.h[y])
             
-        # input()
-        return self.get_kmin() # change here as I dont know why returning k_min would help
+        return self.get_kmin()
     
 
     def modify_cost(self, x, y, cval):
-        x.make_obstacle()
-        assert(x.cost_to(y) == cval)
+        if cval == float('inf'): x.make_obstacle()
+        else: x.make_free()
+        # assert(x.cost_to(y) == cval)
         if self.t[x] == Dstar.CLOSED:
-            print('ADDED')
             self.insert(x, self.h[x])
-        return self.get_kmin() # should be k_min idk how get that tho
-    
-    # def modify_cost(self, x, y, cval):
-    #     #assert(x.cost_to(y) == cval)
-    #     if self.t[x] == Dstar.CLOSED:
-    #         self.h[x] -= x.cost_to(y)
-    #         x.make_obstacle()
-    #         self.h[x] += x.cost_to(y)
-    #         print('ADDED')
-    #         self.insert(x, self.h[x])
-    #     else:
-    #         x.make_obstacle()
-    #     return None # should be k_min idk how get that tho
-    
+        return self.get_kmin()
 
-    def plan(self, start, y=None):
+    def plan(self, start, y=None):       
         curr_k = 0
-
         def get_condition(curr_k):
             if y == None:
                 return self.t[start] != Dstar.CLOSED
@@ -345,29 +323,31 @@ class Dstar(Planner):
 
         init = None
         if y == None:
-            init = start    
+            init = start 
+       
 
         while get_condition(curr_k) and curr_k > -1:
             curr_k = self.process_state(init)
-            print('curr_k:', curr_k)
-            print('pqueue empty?', self.open_list.empty())
-            print()
 
         self.path = []
-        node = start
+        if y == None: 
+            node = start
+            self.total_cost = 0
+        else: 
+            node = y
+
         while True:
             self.path.append(node)
             if node == self.goal:
                 break
             node = self.b[node]
-        
-        total = 0
-        for i in range(len(self.path) - 1):
-            total += self.path[i].cost_to(self.path[i+1])
-        
-        self.total_cost += total
-        
-        print("COST: " + str(self.total_cost))
+
+        if y == None:
+            self.fullpath = self.path
+        else:
+            self.fullpath = self.fullpath[:self.fullpath.index(y)] + self.path
+
+        print('COST:', np.sum([self.fullpath[i].cost_to(self.fullpath[i + 1]) for i in range(len(self.fullpath) - 1)]))
 
         return self.path
 

@@ -34,21 +34,21 @@ print(f"associated onDeck, processed nodes, and iterations before obstacles and 
 # making obstacles at 25%, 50%, and 75% of the current path...
 obstacles = []
 
-def make_obstacles(at=[0.25, 0.50, 0.75]):
+def make_obstacles(path, obstacles, planner, at=[0.25, 0.50, 0.75]):
     """
     Makes obstacles at the % in path specified by at. Returns the index of the 
     path before the first obstacle specified
     """
-    global path, obstacles, planner
     for step in at:
         idx = int(step * len(path))
         x = path[idx]
         obstacles.append(x)
         y = planner.b[x]
         planner.modify_cost(x,y,float('inf'))
+    print(int(at[0] * len(path)) - 1)
     return int(at[0] * len(path)) - 1
 
-y = make_obstacles()
+y = make_obstacles(path, obstacles, planner)
 
 # replanning
 path = planner.plan(env.start, y=path[y])
@@ -57,7 +57,7 @@ viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to add newer obstacles')
 print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
 
-y = make_obstacles()
+y = make_obstacles(path, obstacles, planner)
 
 # replanning
 path = planner.plan(env.start, y=path[y])
@@ -81,10 +81,5 @@ y = make_obstacles()
 path = planner.plan(env.start, y=path[y])
 viz.plot_path(BasicNode.nodes_to_xy(path), col='Indigo')
 viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to show final path')
+viz.show(msg='Showing altered path. Press enter to quit')
 print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
-
-
-viz.plot_path(BasicNode.nodes_to_xy(planner.fullpath), col='Gold')
-viz.show(msg='Showing full path. Press enter to quit')
-
