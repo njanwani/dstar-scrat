@@ -48,42 +48,27 @@ def make_obstacles(at=[0.25, 0.50, 0.75]):
         planner.modify_cost(x,y,float('inf'))
     return int(at[0] * len(path)) - 1
 
-y = make_obstacles()
 
-# replanning
-path = planner.plan(env.start, y=path[y])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Purple')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to add newer obstacles')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
-
-y = make_obstacles()
-
-# replanning
-path = planner.plan(env.start, y=path[y])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Blue')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to add newer obstacles')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
+def replan(y, col='Black'):
+    global path, obstacles, planner, viz
+    # replanning
+    path = planner.plan(env.start, y=path[y])
+    viz.plot_path(BasicNode.nodes_to_xy(path), col=col)
+    viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
+    viz.show(msg='Showing altered path. Press enter to add newer obstacles')
+    print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
 
 y = make_obstacles()
-
-# replanning
-path = planner.plan(env.start, y=path[y])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Violet')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to add newer obstacles')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
+replan(y, col='Purple')
 
 y = make_obstacles()
+replan(y, col='Blue')
 
-# replanning
-path = planner.plan(env.start, y=path[y])
-viz.plot_path(BasicNode.nodes_to_xy(path), col='Indigo')
-viz.plot_nodes(BasicNode.nodes_to_xy(obstacles), col='Black', size=24)
-viz.show(msg='Showing altered path. Press enter to show final path')
-print(f"associated onDeck, processed nodes, and iterations: %s" % (planner.getCounts(), ))
+y = make_obstacles()
+replan(y, col='Violet')
 
+y = make_obstacles()
+replan(y, col='Indigo')
 
 viz.plot_path(BasicNode.nodes_to_xy(planner.fullpath), col='Gold')
 viz.show(msg='Showing full path. Press enter to quit')
