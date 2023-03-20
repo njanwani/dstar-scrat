@@ -29,6 +29,9 @@ class BasicNode:
             self.variant = Node.FREE
         else:
             self.variant = variant
+        self.creach = 0.0
+        self.cost = 0.0
+        self.parent = None
 
 
     def cost_to(self, node):
@@ -61,3 +64,9 @@ class BasicNode:
 
     def __str__(self):
         return f'({self.x}, {self.y})'
+    
+    def __lt__(self, other):
+        """
+        Define less-than so we can organize states by cost
+        """
+        return self.cost < other.cost

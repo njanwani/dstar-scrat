@@ -5,11 +5,32 @@ from lib.environment import *
 import numpy as np
 import matplotlib.pyplot as plt
 
-def replan(new_start, points, new_obstacles, cost_multiplier=1, prevCounts = (0, 0)):
+def generate_obstacles(path, old_obstacles=[]):
+    # making obstacles at 25%, 50%, and 75% of the current path...
+    obstacles = old_obstacles
+    idx = len(path) // 2
+    x = path[idx]
+    obstacles.append([x.x, x.y])
+    # print(x, 'is now an obstacle')
+
+    idx = 3 * len(path) // 4
+    x = path[idx]
+    obstacles.append([x.x, x.y])
+    # print(x, 'is now an obstacle')
+
+    idx = len(path) // 4
+    x = path[idx]
+    obstacles.append([x.x, x.y])
+    # print(x, 'is now an obstacle')
+
+    return obstacles, idx
+
+
+def replan(new_start, points, new_obstacles, cost_multiplier=1, prevCounts = (0, 0, 0)):
     points.remove(new_start)
     env = Uniform(points, new_obstacles)
     env.add_startgoal(start=new_start, goal=[4, 4])
-    planner = Astar(cost_multiplier, prevCounts[0], prevCounts[1])
+    planner = Astar(cost_multiplier, prevCounts[0], prevCounts[1], prevCounts[2])
     return (planner.plan(env.graph, env.start, env.goal), planner.getCounts())
 
 np.random.seed(234)
@@ -33,32 +54,53 @@ viz.plot_graph(env.graph)
 viz.show(msg='Showing graph. Press enter to continue')
 
 planner = Astar()
-path = planner.plan(env.graph, env.start, env.goal)
+path, total_cost = planner.plan(env.graph, env.start, env.goal)
 
 viz.plot_path(BasicNode.nodes_to_xy(path))
 viz.show(msg='Showing path. Press enter to add point obstacle') 
-
-# making obstacles at 25%, 50%, and 75% of the current path...
-new_obstacles = []
-idx = len(path) // 2
-x = path[idx]
-new_obstacles.append([x.x, x.y])
-print(x, 'is now an obstacle')
-
-idx = 3 * len(path) // 4
-x = path[idx]
-new_obstacles.append([x.x, x.y])
-print(x, 'is now an obstacle')
-
-idx = len(path) // 4
-x = path[idx]
-new_obstacles.append([x.x, x.y])
-print(x, 'is now an obstacle')
+print(f"associated onDeck, processed nodes, and iterations before obstacles and replanning: %s" % (planner.getCounts(), ))
+print(f"Total cost of original path: %s" % (total_cost, ))
 
 # replanning
+obstacles, idx = generate_obstacles(path)
 new_start = [path[idx - 1].x, path[idx - 1].y]
-new_path, new_counts = replan(new_start, points, new_obstacles, 1, planner.getCounts())
+(new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 1, planner.getCounts())
+total_cost += new_total_cost
 viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Purple')
+viz.plot_nodes(obstacles, col='Black', size=24)
+viz.show(msg='Showing altered path. Press enter to add newer obstacles')
+print(f"associated onDeck, processed nodes, and iterations: %s" % (new_counts, ))
+print(f"Total cost of path: %s" % (total_cost, ))
+
+# replanning
+obstacles, idx = generate_obstacles(new_path)
+new_start = [new_path[idx - 1].x, new_path[idx - 1].y]
+(new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 1, new_counts)
+total_cost += new_total_cost
+viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Blue')
+viz.plot_nodes(obstacles, col='Black', size=24)
+viz.show(msg='Showing altered path. Press enter to add newer obstacles')
+print(f"associated onDeck, processed nodes, and iterations: %s" % (new_counts, ))
+print(f"Total cost of path: %s" % (total_cost, ))
+
+# replanning
+obstacles, idx = generate_obstacles(new_path)
+new_start = [new_path[idx - 1].x, new_path[idx - 1].y]
+(new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 1, new_counts)
+total_cost += new_total_cost
+viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Violet')
+viz.plot_nodes(obstacles, col='Black', size=24)
+viz.show(msg='Showing altered path. Press enter to add newer obstacles')
+print(f"associated onDeck, processed nodes, and iterations: %s" % (new_counts, ))
+print(f"Total cost of path: %s" % (total_cost, ))
+
+# replanning
+obstacles, idx = generate_obstacles(new_path)
+new_start = [new_path[idx - 1].x, new_path[idx - 1].y]
+(new_path, new_total_cost), new_counts = replan(new_start, points, obstacles, 1, new_counts)
+total_cost += new_total_cost
+viz.plot_path(BasicNode.nodes_to_xy(new_path), col='Indigo')
+viz.plot_nodes(obstacles, col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to quit')
-print(f"associated onDeck and processed nodes: %s" % (new_counts, ))
-print(f"associated onDeck and processed nodes before obstacles and replanning: %s" % (planner.getCounts(), ))
+print(f"associated onDeck, processed nodes, and iterations: %s" % (new_counts, ))
+print(f"Total cost of path: %s" % (total_cost, ))
