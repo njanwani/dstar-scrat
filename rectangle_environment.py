@@ -142,7 +142,7 @@ print(f"associated onDeck and processed nodes: %s" % (planner.getCounts(), ))
 
 # making obstacle at 25% of the current path...
 new_obstacles = []
-idx = len(path) // 2
+idx = len(path) // 4
 x = path[idx]
 new_obstacles.append([x.x, x.y])
 # print(x, 'is now an obstacle')
