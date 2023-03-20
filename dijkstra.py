@@ -45,7 +45,7 @@ points = points.tolist()
 env = Uniform(points)
 env.add_startgoal(start=[-4, -4], goal=[4, 4])
 viz.plot_nodes(env.pts)
-ax.set_title('Dijkstra path planning algorithm') 
+ax.set_title('Dijkstra path planning algorithm')  
 viz.show(msg='Showing states. Press enter to continue')
 
 # plot graph connections
