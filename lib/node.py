@@ -88,12 +88,15 @@ class TopologyNode:
         self.cost = 0
 
 
-    def cost_to(self, node, cfunc=lambda x, y : np.sin(x) * y**2):
+    def set_cost(self, cval):
+        self.cost = np.exp(cval) # keep everything positive
+
+
+    def cost_to(self, node):
         """
         Cost function
         """
-        self.cost = np.exp(cfunc(node.x, node.y))
-        return np.exp(cfunc(node.x, node.y)) # np.exp(cfunc(node.x, node.y) - cfunc(self.x, self.y))
+        return self.cost
     
 
     def nodes_to_xy(path):

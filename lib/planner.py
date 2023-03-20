@@ -165,7 +165,8 @@ class Dstar(Planner):
     OPEN = 1
     CLOSED = 2
 
-    def __init__(self, g, graph, init_onDeck = 0, init_processed = 0, init_iterations = 0, cost=None):
+    def __init__(self, g, graph, init_onDeck = 0, init_processed = 0,
+                 init_iterations = 0):
         """
         Initialization function (many details are left out and can be seen in
         the D* paper) that declares variables and initializes dictionaries.
@@ -307,11 +308,13 @@ class Dstar(Planner):
 
     def modify_cost(self, x, y, cval):
         if cval == float('inf'): x.make_obstacle()
-        else: x.make_free()
+        elif cval == 0: x.make_free()
+        else:
+            x.set_cost(cval)
         # assert(x.cost_to(y) == cval)
         if self.t[x] == Dstar.CLOSED:
             self.insert(x, self.h[x])
-        return self.get_kmin()
+        return None #self.get_kmin()
 
     def plan(self, start, y=None):       
         curr_k = 0
