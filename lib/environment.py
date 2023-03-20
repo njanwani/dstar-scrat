@@ -19,11 +19,17 @@ class Environment:
 
 class Uniform(Environment):
 
-    def __init__(self, pts, obstacles=[], mincost=1):
+    def __init__(self, pts, obstacles=[], mincost=1, nodetype=BasicNode):
         self.graph = {}
         self.obstacles = np.array(obstacles)
         self.pts = np.array(pts)
         self.mincost = mincost
+        self.nodetype = nodetype
+
+
+    def dist(self, v1, v2):
+        return np.linalg.norm(v1.pt - v2.pt)
+    
 
     def generate(self, extranodes=[]):
         """
@@ -34,9 +40,9 @@ class Uniform(Environment):
             if np.array(pt) in self.obstacles:
                 # print("Added obstacle:")
                 # print(pt)
-                nodes.append(BasicNode(pt[0], pt[1], Node.OBSTACLE))
+                nodes.append(self.nodetype(pt[0], pt[1], Node.OBSTACLE))
             else:
-                nodes.append(BasicNode(pt[0], pt[1]))
+                nodes.append(self.nodetype(pt[0], pt[1]))
 
         for extra in extranodes:
             nodes.append(extra)
@@ -47,7 +53,7 @@ class Uniform(Environment):
                 self.graph[v1] = []
 
             for v2 in nodes:
-                if v1.cost_to(v2) < self.mincost and v1 != v2:
+                if self.dist(v1, v2) < self.mincost and v1 != v2:
                     self.graph[v1].append(v2)
 
 
@@ -67,8 +73,8 @@ class Uniform(Environment):
         """
         Adds the start and goal (x,y) points and saves them as nodes
         """
-        self.start = BasicNode(start[0], start[1])
-        self.goal = BasicNode(goal[0], goal[1])
+        self.start = self.nodetype(start[0], start[1])
+        self.goal = self.nodetype(goal[0], goal[1])
         self.generate(extranodes=[self.start, self.goal])
         self.add_points((start, goal), generate=False)
 
