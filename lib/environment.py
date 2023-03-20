@@ -1,5 +1,6 @@
 import numpy as np
 from lib.node import *
+from tqdm import tqdm
 
 class Environment:
     
@@ -41,7 +42,7 @@ class Uniform(Environment):
             nodes.append(extra)
         
         self.graph = {}
-        for v1 in nodes:
+        for v1 in tqdm(nodes):
             if v1 not in self.graph:
                 self.graph[v1] = []
 

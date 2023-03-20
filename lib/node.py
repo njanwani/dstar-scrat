@@ -61,6 +61,9 @@ class BasicNode:
     def make_obstacle(self):
         self.variant = Node.OBSTACLE
     
+    
+    def make_free(self):
+        self.variant = Node.FREE
 
     def __str__(self):
         return f'({self.x}, {self.y})'
