@@ -20,7 +20,7 @@ env.add_startgoal(start=[-4, -4], goal=[4, 4])
 for v in env.graph.keys():
     v.set_cost(np.sin(v.x) + v.y**2)
 # viz.plot_nodes(env.pts)
-ax.set_title('D* path planning algorithm') 
+ax.set_title('D* path planning on contour $\sin(x) + y^2$') 
 
 x = np.arange(-7, 7)
 y = x.reshape(-1, 1)
@@ -44,12 +44,15 @@ h = np.cos(y) + x**2
 
 fig, ax = plt.subplots()
 viz2 = Visualization((-5, 5), (-5, 5), ax)
+ax.set_title('D* path planning on contour $x^2 + \sin(y)$') 
 viz.plot_axes()
 
 cs = plt.contourf(x,y.flatten(),h, levels=np.linspace(-1,10,num=100), extend='both')
 # plan initial path
-path = planner.plan(env.start, env.start)
-viz2.plot_path(BasicNode.nodes_to_xy(path), col='Black')
+path = planner.plan(env.start, path[len(path) // 2])
+viz2.plot_path(BasicNode.nodes_to_xy(planner.fullpath), col='Black')
+ax.set_xlim((-5,5))
+ax.set_ylim((-5,5))
 viz2.show(msg='Showing path. Press enter to add point obstacle') 
 print(f"associated onDeck, processed nodes, and iterations before obstacles and replanning: %s" % (planner.getCounts(), ))
 
