@@ -53,6 +53,62 @@ class BasicNode:
         pointpath = []
 
         for node in path:
+            # print(node)
+            # input()
+            pointpath.append([node.x, node.y])
+
+        return pointpath
+    
+
+    def make_obstacle(self):
+        self.variant = Node.OBSTACLE
+    
+    
+    def make_free(self):
+        self.variant = Node.FREE
+
+    def __str__(self):
+        return f'({self.x}, {self.y})'
+    
+    def __lt__(self, other):
+        """
+        Define less-than so we can organize states by cost
+        """
+        return self.cost < other.cost
+    
+
+class TopologyNode(BasicNode):
+    """
+    Basic x,y node. Changing to a more complex state will likely require changes in other lib files
+    """
+
+    def __init__(self, x, y, variant=None):
+        super().__init__(x, y, variant)
+        self.x = x
+        self.y = y
+        self.pt = np.array([x, y])
+        self.creach = 0.0
+        self._cost = 0
+
+
+    def set_cost(self, cval):
+        self._cost = np.exp(cval) # keep everything positive
+
+
+    def cost_to(self, node):
+        """
+        Cost function
+        """
+        return self._cost
+    
+
+    def nodes_to_xy(path):
+        """
+        Converts nodes to xy path (only works for BasicNode)
+        """
+        pointpath = []
+
+        for node in path:
             pointpath.append([node.x, node.y])
 
         return pointpath

@@ -165,7 +165,8 @@ class Dstar(Planner):
     OPEN = 1
     CLOSED = 2
 
-    def __init__(self, g, graph, init_onDeck = 0, init_processed = 0, init_iterations = 0):
+    def __init__(self, g, graph, init_onDeck = 0, init_processed = 0,
+                 init_iterations = 0):
         """
         Initialization function (many details are left out and can be seen in
         the D* paper) that declares variables and initializes dictionaries.
@@ -307,11 +308,13 @@ class Dstar(Planner):
 
     def modify_cost(self, x, y, cval):
         if cval == float('inf'): x.make_obstacle()
-        else: x.make_free()
+        elif cval == 0: x.make_free()
+        else:
+            x.set_cost(cval)
         # assert(x.cost_to(y) == cval)
         if self.t[x] == Dstar.CLOSED:
             self.insert(x, self.h[x])
-        return self.get_kmin()
+        return None #self.get_kmin()
 
     def plan(self, start, y=None):       
         curr_k = 0
@@ -414,6 +417,8 @@ class DstarFocused(Planner):
 
         self.d_bias = 0                     # Stores the accrued bias to
                                             # generate self.fb
+        
+        self.total_cost = 0
 
         # initialization steps
         for x in graph.keys():
@@ -436,19 +441,28 @@ class DstarFocused(Planner):
         (fb, f, k_old), x = self.open_list.get(block=False)
         while x != None:
             if self.r[x] != self.r_curr:
-                print("reinserting nodes! " + str(x.x) + "," + str(x.y))
+                #print("reinserting nodes! " + str(x.x) + "," + str(x.y))
                 h_new = self.h[x]
+                self.h[x] = self.k[x]
                 self.insert(x, h_new)
             else:
+                #print("returning node! " + str((x.x, x.y)) + "r[x]: " + str((self.r[x].x, self.r[x].y)))
                 break
         return (k_old, x)
     
 
-    def get_kmin(self):
+    def get_kmin(self, to_print = False):
         """
         Peeks at the top of the OPEN priority queue 
         """
-        pass # not sure what to write here since we get this in min_state()...
+        (fb, f, k_min), x = self.open_list.get(block=False)
+        if to_print:
+            print("fb: " + str(fb))
+            print("f:" + str(f))
+            print("k_min: " + str(k_min))
+            print("x: " + str(x))
+        self.open_list.put(((fb, f, k_min), x))
+        return (f, k_min)
 
 
     def insert(self, x, h_new):
@@ -494,13 +508,13 @@ class DstarFocused(Planner):
             Exception('Priority queue is empty')
         # print(x.x, x.y)
 
-        if self.t[x] == Dstar.CLOSED:
-            return x
+        #if self.t[x] == Dstar.CLOSED:
+        #    return x
 
         self.t[x] = Dstar.CLOSED
         self.addProcessed()
 
-        # LOWER state
+        # RAISE state
         if k_old < self.h[x]:
             # print('LOWER')
             for y in self.graph[x]:
@@ -509,7 +523,7 @@ class DstarFocused(Planner):
                     self.h[x] = self.h[y] + x.cost_to(y)
 
         # RAISE state
-        elif k_old == self.h[x]:
+        if k_old == self.h[x]:
             # print('RAISE')
             for y in self.graph[x]:
                 # print(y in self.b)
@@ -542,23 +556,29 @@ class DstarFocused(Planner):
                             self.insert(y, self.h[y])
             
         # input()
-        return x # change here as I dont know why returning k_min would help
+        return self.get_kmin() # change here as I dont know why returning k_min would help
     
 
     def modify_cost(self, x, y, cval, r):
-        x.make_obstacle()
         self.r_curr = r
+        x.make_obstacle()
         assert(x.cost_to(y) == cval)
         if self.t[x] == Dstar.CLOSED:
             print('ADDED')
             self.insert(x, self.h[x])
-        return None # should be k_min idk how get that tho
+        return self.get_kmin()
     
 
+
     def plan(self, start):
-        curr = None
-        while curr != start:
-            curr = self.process_state(start)
+        # curr = None
+        # while curr != start:
+        #     curr = self.process_state(start)
+
+        val = None
+        while self.t[start] != Dstar.CLOSED:
+            val = self.process_state(start)
+        
 
         self.path = []
         node = start
@@ -568,4 +588,46 @@ class DstarFocused(Planner):
                 break
             node = self.b[node]
 
+        total = 0
+        for i in range(len(self.path) - 1):
+            total += self.path[i].cost_to(self.path[i+1])
+        
+        self.total_cost += total
+        
+        print("COST: " + str(self.total_cost))
+        return self.path
+
+    def replan(self, start):
+
+        val = (-1, -1)
+        count = 0
+        while val < (self.k[start], self.h[start]):#count < 3:#not self.open_list.empty(): #self.h[start]:
+            if val[0] > 10000:
+                count += 1
+            val = self.process_state(start)
+            #print(val[0])
+        
+        #print(val[0])
+
+            
+        self.path = []
+        node = start
+        while True:
+            self.path.append(node)
+            # val = (-1, -1)
+            # while val[0] <=  10000: #self.h[start]:
+            #     val = self.process_state(start)
+            #     assert(type(val) != type(start))
+            # print("val: " + str(val))
+            if node == self.goal:
+                break
+            node = self.b[node]
+
+        total = 0
+        for i in range(len(self.path) - 1):
+            total += self.path[i].cost_to(self.path[i+1])
+        
+        self.total_cost += total
+        
+        print("COST: " + str(self.total_cost))
         return self.path

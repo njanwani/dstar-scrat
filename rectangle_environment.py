@@ -58,6 +58,8 @@ final_path = np.copy(path)
 viz.plot_path(BasicNode.nodes_to_xy(path))
 viz.show(msg='Showing path. Press enter to add point obstacle') 
 print(f"associated onDeck, processed nodes, and iterations before obstacles and replanning: %s" % (planner.getCounts(), ))
+print(f"Total cost of path: %s" % (path_cost(final_path), ))
+
 
 # making obstacle at 50% of the current path...
 first_obstacles = []
@@ -76,7 +78,6 @@ viz.plot_nodes(first_obstacles, col='Black', size=24)
 viz.show(msg='Showing altered path. Press enter to quit')
 print(f"associated onDeck, processed nodes, and iterations: %s" % (new_counts, ))
 print(f"Total cost of path: %s" % (path_cost(final_path), ))
-print(f"Total cost of path: %s" % (total_cost, ))
 
 # making obstacle at 25% of the new path...
 new_obstacles = []
@@ -141,7 +142,7 @@ print(f"associated onDeck and processed nodes: %s" % (planner.getCounts(), ))
 
 # making obstacle at 25% of the current path...
 new_obstacles = []
-idx = len(path) // 2
+idx = len(path) // 4
 x = path[idx]
 new_obstacles.append([x.x, x.y])
 # print(x, 'is now an obstacle')
